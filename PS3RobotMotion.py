@@ -37,7 +37,7 @@ ADDR_MX_GOAL_POSITION       = 30                            # Direccion de posic
 PROTOCOL_VERSION            = 1                             # Version del Protocolo de los motores
 
 # Ajustes por defecto
-DXL_ID                      = 1                             # ID del motor Dynamixel: 1 (para maquina de estados)
+DXL_ID                      = 2                             # ID del motor Dynamixel: 1 (para maquina de estados)
 BAUDRATE                    = 1000000                       # Tasa de transmision
 DEVICENAME                  = "/dev/ttyUSB0".encode('utf-8')# Revisar el puerto de transmision que se esta usando
                                                             # Linux: "/dev/ttyUSB0", RPi: "/dev/ttyAMA0"
@@ -73,10 +73,11 @@ while 1:
         break
         #raise SystemExit
     
-    if joystick.get_axis(0):                            # Obtiene el valor de la posicion actual del eje()
+    if joystick.get_axis(0):                             # Obtiene el valor de la posicion actual del eje()
         vector_pos.append(joystick.get_axis(0))
-        pos=int((int(vector_pos[-1]*127))*(2.68503937)) # Transformacion del valor del eje a valor
-        pos=512-pos                                     # comprensible por el motor AX-12A
+        pos=int(171*(vector_pos[-1]**3)+512)			 # Función cubica para suavizar movimiento
+		#pos=int((int(vector_pos[-1]*127))*(2.68503937)) # Transformacion del valor del eje a valor
+        #pos=512-pos                                     # comprensible por el motor AX-12A
     else:
         pos=512
     dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, DXL_ID, ADDR_MX_GOAL_POSITION, pos)
